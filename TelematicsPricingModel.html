@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border: 1px solid #DBDBDB;
@@ -53,7 +53,7 @@
 
         .content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 2fr 2fr;
             gap: 0;
             padding: 0;
         }
@@ -61,6 +61,39 @@
         .inputs {
             background: white;
             padding: 40px;
+            border-right: 1px solid #DBDBDB;
+        }
+
+        .results-panel {
+            background: white;
+            padding: 40px;
+            min-width: 0;
+        }
+
+        .results-panel--middle {
+            border-right: 1px solid #DBDBDB;
+        }
+
+        .results-area {
+            grid-column: 2 / span 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-width: 0;
+        }
+
+        .results-title {
+            grid-column: 1 / -1;
+            padding: 40px 40px 0;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .results-area .results-panel {
+            padding-top: 24px;
+        }
+
+        .results-area .results-panel--middle {
             border-right: 1px solid #DBDBDB;
         }
 
@@ -158,8 +191,7 @@
             display: flex;
             flex-direction: column;
             gap: 0;
-            background: white;
-            padding: 40px;
+            min-width: 0;
         }
 
         .results h2 {
@@ -300,6 +332,39 @@
             background: white;
         }
 
+        .metric-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .metric-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .metric-grid-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .metric-card {
+            border: 1px solid #DBDBDB;
+            border-radius: 2px;
+            padding: 16px;
+            background: white;
+        }
+
+        .metric-card-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+
+        .metric-card-value {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #000000;
+        }
+
         .chart-container {
             position: relative;
             height: 200px;
@@ -374,7 +439,38 @@
                 border-bottom: 1px solid #DBDBDB;
             }
 
+            .results-panel--middle {
+                border-right: none;
+                border-bottom: 1px solid #DBDBDB;
+            }
+
+            .results-panel {
+                padding: 24px;
+            }
+
+            .results-area {
+                grid-column: auto;
+                grid-template-columns: 1fr;
+            }
+
+            .results-title {
+                padding: 24px 24px 0;
+            }
+
+            .results-area .results-panel--middle {
+                border-right: none;
+                border-bottom: 1px solid #DBDBDB;
+            }
+
+            .results-area .results-panel {
+                padding-top: 24px;
+            }
+
             .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-grid-3 {
                 grid-template-columns: 1fr;
             }
 
@@ -387,7 +483,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Telematics Pricing Model</h1>
+            <h1>Telematics Pricing Model (Annual)</h1>
+            <p>Explore the financial impact of telematics adoption on insurers and insureds. Adjust the model inputs to see how telematics can influence loss rates, revenue, and overall savings for both parties. All calculations are performed on an annual basis.</p>
         
         </div>
 
@@ -440,6 +537,13 @@
                             <div class="source-note">Telematics can reduce insurer's loss rate by 20% - 30%. <a href="https://www.marketsandmarkets.com/blog/AT/usage-based-insurance-market-size" target="_blank">Source</a></div>
                         </div>
 
+                        <div class="input-group">
+                            <label for="telematicsCostPerPersonPerMonth">Telematics Cost Per Person Per Month: <span id="telematicsCostPerPersonPerMonthValue">$50</span></label>
+                            <input type="range" id="telematicsCostPerPersonPerMonth" min="10" max="200" step="1" value="50">
+                            <div class="input-info">Range: $10 - $200 per person/month</div>
+                            <div class="source-note">Estimated telematics cost is $15 - $50 per person per month. <a href="https://www.gpsinsight.com/blog/what-is-the-cost-of-telematics/#elementor-toc__heading-anchor-5" target="_blank">Source</a></div>
+                        </div>
+
                         <div class="collapsible-section">
                             <div class="collapsible-header" id="customerAssumptionsHeader">
                                 <span>Assumptions for customer retention and acquisition costs</span>
@@ -479,47 +583,105 @@
                 </div>
             </div>
 
-            <div class="results">
-                <h2>Results</h2>
+            <div class="results-area">
+                <h2 class="results-title">Results</h2>
 
-                <!-- For Insurer Section -->
-                <div class="results-section" id="insurerSection">
-                    <h3>For Insurer</h3>
+                <div class="results-panel results-panel--middle">
+                    <!-- For Insurer Section -->
+                    <div class="results-section" id="insurerSection">
+                        <h3>For Insurer</h3>
 
-                    <!-- Loss Subsection -->
-                    <div class="subsection">
-                        <h4>Pay Out</h4>
-                        <div id="insurerLoss"></div>
-                    </div>
-
-                    <!-- Loss Rate & Breakdown Columns -->
-                    <div class="two-column">
-                        <div class="column-item">
-                            <h4>Pay Out Rate Metrics</h4>
-                            <div id="insurerLossRates"></div>
+                        <!-- Loss Subsection -->
+                        <div class="subsection">
+                            <h4>Pay Out</h4>
+                            <div id="insurerLoss"></div>
                         </div>
-                        <div class="column-item">
-                            <h4>Pay Out Breakdown (With Telematics)</h4>
-                            <div id="insurerLossBreakdown"></div>
+
+                        <!-- Loss Rate & Breakdown Columns -->
+                        <div class="two-column">
+                            <div class="column-item">
+                                <h4>Pay Out Rate Metrics</h4>
+                                <div id="insurerLossRates"></div>
+                            </div>
+                            <div class="column-item">
+                                <h4>Pay Out Breakdown (With Telematics)</h4>
+                                <div id="insurerLossBreakdown"></div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Revenue Subsection -->
-                    <div class="subsection">
-                        <h4>Revenue</h4>
-                        <div id="insurerRevenue"></div>
-                    </div>
+                        <!-- Revenue Subsection -->
+                        <div class="subsection">
+                            <h4>Revenue</h4>
+                            <div id="insurerRevenue"></div>
+                        </div>
 
-                    <!-- Chart -->
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
+                        <!-- Chart -->
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
-                <!-- For Insured Section -->
-                <div class="results-section" id="insuredSection">
-                    <h3>For Insured</h3>
-                    <div id="insuredResults"></div>
+                <div class="results-panel results-panel--right">
+                    <!-- For Insured Section -->
+                    <div class="results-section" id="insuredSection">
+                        <h3>For Insured</h3>
+                        <div id="insuredResults"></div>
+                    </div>
+
+                    <!-- For Society Section -->
+                    <div class="results-section" id="societySection">
+                        <h3>For Society</h3>
+
+                        <div class="subsection">
+                            <h4>Speeding</h4>
+                            <div class="source-note">Telematics reduces speeding by up to 75%. <a href="https://blog.agero.com/maximizing-the-potential-of-usage-based-insurance" target="_blank">Source</a></div>
+                            <div class="metric-grid metric-grid-3" style="margin-top: 12px;">
+                                <div class="metric-card">
+                                    <div class="metric-card-title">Lives Saved</div>
+                                    <div class="metric-card-value" id="societySpeedingLivesSaved"></div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-title">Injuries Prevented</div>
+                                    <div class="metric-card-value" id="societySpeedingInjuriesPrevented"></div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-title">Cost Saved from Crashing</div>
+                                    <div class="metric-card-value" id="societySpeedingCostSaved"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h4>Distracted driving</h4>
+                            <div class="source-note">Telematics reduces driving distraction by 20%. <a href="https://cabadvantage.com/how-telematics-boosts-safety-and-savings-for-motor-carriers-and-insurers/#:~:text=Enhancing%20Fleet%20Management-,1.,and%20reduce%20their%20insurance%20premiums" target="_blank">Source</a></div>
+                            <div class="metric-grid metric-grid-1" style="margin-top: 12px; max-width: 320px;">
+                                <div class="metric-card">
+                                    <div class="metric-card-title">Lives Saved</div>
+                                    <div class="metric-card-value" id="societyDistractionLivesSaved"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h4>Environment</h4>
+                            <div class="source-note">Aggresive driving lower fuel economy by 15%-30%. The use of telematics can reduce that. <a href="https://afdc.energy.gov/conserve/driving-behavior" target="_blank">Source</a></div>
+                            <div class="metric-grid metric-grid-3" style="margin-top: 12px;">
+                                <div class="metric-card">
+                                    <div class="metric-card-title">Fuel Saved</div>
+                                    <div class="metric-card-value" id="societyEnvironmentFuelSaved"></div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-title">Cost Saved</div>
+                                    <div class="metric-card-value" id="societyEnvironmentCostSaved"></div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-card-title">CO2 Saved</div>
+                                    <div class="metric-card-value" id="societyEnvironmentCO2Saved"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

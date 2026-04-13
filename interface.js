@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('telematicsDiscount').value = 0.15;
     document.getElementById('baseLossRate').value = 0.71;
     document.getElementById('telematicsLossRateReduction').value = 0.2;
+    document.getElementById('telematicsCostPerPersonPerMonth').value = 15;
     document.getElementById('customerRetentionRate').value = 0.71;
     document.getElementById('customerRetentionRateMultiplierWithTelematics').value = 0.2;
     document.getElementById('customerAcquisitionCost').value = 300;
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDisplayValues();
 
     // Add event listeners for all sliders
-    ['totalPolicy', 'telematicsAdoptionRatio', 'baseYearlyPremium', 'telematicsDiscount', 'baseLossRate', 'telematicsLossRateReduction', 'customerRetentionRate', 'customerRetentionRateMultiplierWithTelematics', 'customerAcquisitionCost', 'customerRetentionCostCoef'].forEach(id => {
+    ['totalPolicy', 'telematicsAdoptionRatio', 'baseYearlyPremium', 'telematicsDiscount', 'baseLossRate', 'telematicsLossRateReduction', 'telematicsCostPerPersonPerMonth', 'customerRetentionRate', 'customerRetentionRateMultiplierWithTelematics', 'customerAcquisitionCost', 'customerRetentionCostCoef'].forEach(id => {
         document.getElementById(id).addEventListener('input', function() {
             updateDisplayValues();
             handleCalculate();
@@ -71,6 +72,9 @@ function updateDisplayValues() {
     const lossRateReduction = parseFloat(document.getElementById('telematicsLossRateReduction').value);
     document.getElementById('telematicsLossRateReductionValue').textContent = (lossRateReduction * 100).toFixed(0) + '%';
 
+    const telematicsCostPerPersonPerMonth = parseFloat(document.getElementById('telematicsCostPerPersonPerMonth').value);
+    document.getElementById('telematicsCostPerPersonPerMonthValue').textContent = '$' + telematicsCostPerPersonPerMonth.toLocaleString();
+
     const customerRetentionRate = parseFloat(document.getElementById('customerRetentionRate').value);
     document.getElementById('customerRetentionRateValue').textContent = (customerRetentionRate * 100).toFixed(0) + '%';
 
@@ -82,6 +86,23 @@ function updateDisplayValues() {
 
     const customerRetentionCostCoef = parseFloat(document.getElementById('customerRetentionCostCoef').value);
     document.getElementById('customerRetentionCostCoefValue').textContent = (customerRetentionCostCoef * 100).toFixed(0) + '%';
+}
+
+function formatLargeValue(value, options = {}) {
+    const { prefix = '', suffix = '', decimals = 3 } = options;
+    const numericValue = Number(value) || 0;
+    const absoluteValue = Math.abs(numericValue);
+    const sign = numericValue < 0 ? '-' : '';
+
+    if (absoluteValue >= 1_000_000_000) {
+        return `${sign}${prefix}${(absoluteValue / 1_000_000_000).toFixed(decimals)}B${suffix}`;
+    }
+
+    if (absoluteValue >= 1_000_000) {
+        return `${sign}${prefix}${(absoluteValue / 1_000_000).toFixed(decimals)}M${suffix}`;
+    }
+
+    return `${sign}${prefix}${absoluteValue.toFixed(decimals)}${suffix}`;
 }
 
 function handleCalculate() {
@@ -177,6 +198,23 @@ function handleCalculate() {
             <span class="result-value highlight">${formatCurrency(results.savingsForInsuredPerPerson)} / person</span>
         </div>
     `;
+
+    // === FOR SOCIETY ===
+    const totalPolicy = parseFloat(document.getElementById('totalPolicy').value) || 0;
+    const telematicsAdoptionRatio = parseFloat(document.getElementById('telematicsAdoptionRatio').value) || 0;
+    const speedingBenefits = calculateReducedSpeedingBenefits(totalPolicy, telematicsAdoptionRatio);
+    const distractionBenefits = calculateReducedDistractionBenefits(totalPolicy, telematicsAdoptionRatio);
+    const environmentBenefits = calculateFuelAndEmissionBenefits(totalPolicy, telematicsAdoptionRatio);
+
+    document.getElementById('societySpeedingLivesSaved').textContent = formatLargeValue(speedingBenefits.livesSaved);
+    document.getElementById('societySpeedingInjuriesPrevented').textContent = formatLargeValue(speedingBenefits.injuriesPrevented);
+    document.getElementById('societySpeedingCostSaved').textContent = formatLargeValue(speedingBenefits.costSaved, { prefix: '$' });
+
+    document.getElementById('societyDistractionLivesSaved').textContent = formatLargeValue(distractionBenefits.livesSaved);
+
+    document.getElementById('societyEnvironmentFuelSaved').textContent = formatLargeValue(environmentBenefits.fuelSaved_gallons, { suffix: ' gallons' });
+    document.getElementById('societyEnvironmentCostSaved').textContent = formatLargeValue(environmentBenefits.costSaved, { prefix: '$' });
+    document.getElementById('societyEnvironmentCO2Saved').textContent = formatLargeValue(environmentBenefits.CO2_saved_tonnes, { suffix: ' tons' });
 }
 
 function createRevenueChart(results, formatCurrency) {
@@ -185,10 +223,11 @@ function createRevenueChart(results, formatCurrency) {
     // Calculate profit and pay out for each scenario, including customer retention/acquisition costs.
     const customerCostWithout = results.totalCustomerCostWithoutTelematics || 0;
     const customerCostWith = results.totalCustomerCost || 0;
+    const telematicsCostWith = results.totalTelematicsCost || 0;
     const profitWithout = results.totalRevenueWithoutTelematics - results.totalLossWithoutTelematics - customerCostWithout;
     const lossWithout = results.totalLossWithoutTelematics;
     
-    const profitWith = results.totalRevenue - results.totalLoss - customerCostWith;
+    const profitWith = results.totalRevenue - results.totalLoss - customerCostWith - telematicsCostWith;
     const lossWith = results.totalLoss;
 
     // Destroy existing chart if it exists
@@ -212,6 +251,13 @@ function createRevenueChart(results, formatCurrency) {
                     label: 'Customer Cost',
                     data: [customerCostWithout, customerCostWith],
                     backgroundColor: '#00838f',
+                    borderRadius: 0,
+                    order: 2
+                },
+                {
+                    label: 'Telematics Cost',
+                    data: [0, telematicsCostWith],
+                    backgroundColor: '#f57c00',
                     borderRadius: 0,
                     order: 2
                 },
