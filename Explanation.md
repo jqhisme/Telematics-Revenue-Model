@@ -15,3 +15,9 @@ const speedingVMT = totalVMT * 0.29; \
 
 average mile per driver  = 15000
 https://www.fhwa.dot.gov/ohim/onh00/bar8.htm
+
+
+## FAQ
+Why the saved lives value is so small?
+In 2023, there were approximately 284.6 to 285 million registered motor vehicles in the United States. If we assume each policy correspond to vehicle, it is a extremely small portion.
+

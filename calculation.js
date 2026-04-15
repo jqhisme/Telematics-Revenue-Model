@@ -20,7 +20,7 @@ function compute(){
     // source https://docs.google.com/document/d/1fsV6LX3JA2KY1J9TD50rqab8i6Vv8R8C_lWFLoloBfQ/edit?tab=t.0
     const customerRetentionRate = parseFloat(document.getElementById("customerRetentionRate").value) || 0.71; // range 0.0 to 1.0
     // source https://www.insurancethoughtleadership.com/telematics/tech-secret-combined-ratio-below-100#:~:text=While%20large%20personal%20auto%20insurers,surface%20of%20the%20potential%20benefits.&text=KEY%20TAKEAWAY:,20%25%20compared%20with%20traditional%20portfolios.
-    const customerRetentionRateMultiplierWithTelematics = parseFloat(document.getElementById("customerRetentionRateMultiplierWithTelematics").value) || 0.2; // range 0.0 to 1.0
+    const customerRetentionRateMultiplierWithTelematics = parseFloat(document.getElementById("customerRetentionRateMultiplierWithTelematics").value) || 0.2; // interpreted as churn reduction rate, range 0.0 to 1.0
     // source https://www.simplesolve.com/blog/ai-and-insurtech-cutting-customer-acquisition-cost#:~:text=Auto%20insurance%20customer%20acquisition%20costs%20(CAC)%20typically,duration%20to%20manage%20their%20impact%20on%20profitability.
     const customerAcquisitionCost = parseFloat(document.getElementById("customerAcquisitionCost").value) || 0; // range 300 to 800
     // source https://www.marketsandmarkets.com/blog/AT/usage-based-insurance-market-size
@@ -28,8 +28,10 @@ function compute(){
     const customerRetentionCost = customerAcquisitionCost * customerRetentionCostMultiplier;
     
 
-    // for the customers who adopted telematics, we assume they follow the reduced churn rate. 
-    const customerRetentionRateWithTelematics = customerRetentionRate * customerRetentionRateMultiplierWithTelematics;
+    // Apply telematics as a reduction to churn, then convert back to retention.
+    const baselineChurnRate = 1 - customerRetentionRate;
+    const reducedChurnRateWithTelematics = baselineChurnRate * (1 - customerRetentionRateMultiplierWithTelematics);
+    const customerRetentionRateWithTelematics = 1 - reducedChurnRateWithTelematics;
     const telematicsCustomerAmount = totalPolicy * telematicsAdoptionRatio;
     const CustomersWithTelematicsCost = telematicsCustomerAmount * customerRetentionRateWithTelematics * customerRetentionCost + telematicsCustomerAmount * (1 - customerRetentionRateWithTelematics) * customerAcquisitionCost;
 

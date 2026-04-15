@@ -78,8 +78,8 @@ function updateDisplayValues() {
     const customerRetentionRate = parseFloat(document.getElementById('customerRetentionRate').value);
     document.getElementById('customerRetentionRateValue').textContent = (customerRetentionRate * 100).toFixed(0) + '%';
 
-    const retentionMultiplier = parseFloat(document.getElementById('customerRetentionRateMultiplierWithTelematics').value);
-    document.getElementById('customerRetentionRateMultiplierWithTelematicsValue').textContent = (retentionMultiplier * 100).toFixed(0) + '%';
+    const churnReductionWithTelematics = parseFloat(document.getElementById('customerRetentionRateMultiplierWithTelematics').value);
+    document.getElementById('customerRetentionRateMultiplierWithTelematicsValue').textContent = (churnReductionWithTelematics * 100).toFixed(0) + '%';
 
     const customerAcquisitionCost = parseFloat(document.getElementById('customerAcquisitionCost').value);
     document.getElementById('customerAcquisitionCostValue').textContent = '$' + customerAcquisitionCost.toLocaleString();
