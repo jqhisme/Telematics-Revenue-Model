@@ -4,10 +4,11 @@
 function compute(){
     
     // Main Values for Model Input
-    const totalPolicy = parseFloat(document.getElementById("totalPolicy").value) || 0; //range 1 - 5,000
-    const telematicsAdoptionRatio = parseFloat(document.getElementById("telematicsAdoptionRatio").value) || 0; // range 0.0 to 1.0
-    const baseYearlyPremium = parseFloat(document.getElementById("baseYearlyPremium").value) || 0; // range 500 to 5000
-    const telematicsDiscount = parseFloat(document.getElementById("telematicsDiscount").value) || 0; // range 0.05 to 0.5
+    const totalPolicyInMillions = parseFloat(document.getElementById("totalPolicy").value) || 4.5; // range 1.0 - 10.0 (millions)
+    const totalPolicy = totalPolicyInMillions * 1_000_000;
+    const telematicsAdoptionRatio = parseFloat(document.getElementById("telematicsAdoptionRatio").value) || 0.63; // range 0.0 to 1.0
+    const baseYearlyPremium = parseFloat(document.getElementById("baseYearlyPremium").value) || 900; // range 900 to 5000
+    const telematicsDiscount = parseFloat(document.getElementById("telematicsDiscount").value) || 0.1; // range 0.01 to 0.8
 
     // Values from Assumptions
     const baseLossRate = parseFloat(document.getElementById("baseLossRate").value) || 0.71;

@@ -5,10 +5,10 @@ let revenueChartInstance = null;
 // Initialize the interface on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Set default values
-    document.getElementById('totalPolicy').value = 2500;
-    document.getElementById('telematicsAdoptionRatio').value = 0.5;
+    document.getElementById('totalPolicy').value = 4.5;
+    document.getElementById('telematicsAdoptionRatio').value = 0.63;
     document.getElementById('baseYearlyPremium').value = 2750;
-    document.getElementById('telematicsDiscount').value = 0.15;
+    document.getElementById('telematicsDiscount').value = 0.1;
     document.getElementById('baseLossRate').value = 0.71;
     document.getElementById('telematicsLossRateReduction').value = 0.2;
     document.getElementById('telematicsCostPerPersonPerMonth').value = 15;
@@ -48,9 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateDisplayValues() {
-    // Update total policies display
+    // Update total policies display (input is in millions)
     const totalPolicy = parseFloat(document.getElementById('totalPolicy').value);
-    document.getElementById('totalPolicyValue').textContent = totalPolicy.toLocaleString();
+    document.getElementById('totalPolicyValue').textContent = totalPolicy.toFixed(2) + 'M';
 
     // Update adoption ratio display as percentage
     const adoptionRatio = parseFloat(document.getElementById('telematicsAdoptionRatio').value);
@@ -111,6 +111,10 @@ function handleCalculate() {
 
     // Format currency
     const formatCurrency = (value) => {
+        if (Math.abs(value) >= 1_000_000) {
+            return formatLargeValue(value, { prefix: '$', decimals: 2 });
+        }
+
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
@@ -200,7 +204,8 @@ function handleCalculate() {
     `;
 
     // === FOR SOCIETY ===
-    const totalPolicy = parseFloat(document.getElementById('totalPolicy').value) || 0;
+    const totalPolicyInMillions = parseFloat(document.getElementById('totalPolicy').value) || 4.5;
+    const totalPolicy = totalPolicyInMillions * 1_000_000;
     const telematicsAdoptionRatio = parseFloat(document.getElementById('telematicsAdoptionRatio').value) || 0;
     const speedingBenefits = calculateReducedSpeedingBenefits(totalPolicy, telematicsAdoptionRatio);
     const distractionBenefits = calculateReducedDistractionBenefits(totalPolicy, telematicsAdoptionRatio);
@@ -229,6 +234,8 @@ function createRevenueChart(results, formatCurrency) {
     
     const profitWith = results.totalRevenue - results.totalLoss - customerCostWith - telematicsCostWith;
     const lossWith = results.totalLoss;
+
+    const minStackedValue = Math.min(0, profitWithout, profitWith);
 
     // Destroy existing chart if it exists
     if (revenueChartInstance) {
@@ -278,10 +285,11 @@ function createRevenueChart(results, formatCurrency) {
             scales: {
                 x: {
                     stacked: true,
-                    max: 14000000,
+                    min: minStackedValue < 0 ? minStackedValue - Math.abs(minStackedValue) * 0.1 : undefined,
+                    max: 30_000_000_000,
                     ticks: {
                         callback: function(value) {
-                            return '$' + (value / 1000).toFixed(0) + 'K';
+                            return formatLargeValue(value, { prefix: '$', decimals: 1 });
                         }
                     }
                 },
